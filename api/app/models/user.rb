@@ -5,4 +5,9 @@ class User < ApplicationRecord
   validates :password, presence: true, length: { minimum: 7 }
 
   validates_inclusion_of :role, in: %w[admin user]
+
+  scope :list_user, -> (role) {
+    condition = role == 'admin' ? {} : {is_block: false, role: 'user'} 
+    where(condition).order(created_at: :asc)
+  }
 end

@@ -2,10 +2,12 @@ require 'rails_helper'
 
 RSpec.describe 'Users API', type: :request do
   let(:user) { build(:user) }
+  let(:block_user) {build(:user, is_block: true)}
   let(:headers) { valid_headers.except('Authorization') }
   let(:valid_attributes) do
     attributes_for(:user)
   end
+
 
   # User signup test suite
   describe 'POST /signup' do
@@ -73,6 +75,52 @@ RSpec.describe 'Users API', type: :request do
         post '/signup', params: { username: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.', email: 'user1@gmail.com', password: 'pass' }
         expect(response).to have_http_status(422)
         expect(json['message']).to eq("Validation failed: Username is too long (maximum is 50 characters), Password is too short (minimum is 7 characters)")
+      end
+    end
+  end
+
+  describe 'get list users' do
+    let!(:user) { create(:user) }
+    let!(:list_user) {create_list(:user, 10)}
+    let!(:block_user) { create(:user, is_block: true) }
+    let!(:admin_user) { create(:user, role: 'admin') }
+    let(:admin_header) do
+      {
+        "Authorization" => token_generator(admin_user.id),
+        "Content-Type" => "application/json"
+      }
+    end
+    let(:user_header) do
+      {
+        "Authorization" => token_generator(user.id),
+        "Content-Type" => "application/json"
+      }
+    end
+    context 'without page' do
+      before {get '/users', headers: admin_header}
+      it 'success' do
+        expect(response).to have_http_status(200)
+        expect(json.count).to eq(10)
+      end
+
+      before {get '/users', headers: user_header}
+      it 'success' do
+        expect(response).to have_http_status(200)
+        expect(json.count).to eq(10)
+      end
+    end
+
+    context 'with page' do
+      before {get '/users', params:{page: 2}, headers: admin_header}
+      it 'success' do
+        expect(response).to have_http_status(200)
+        expect(json.count).to eq(1)
+      end
+
+      before {get '/users', params: {page: 2}, headers: user_header}
+      it 'success' do
+        expect(response).to have_http_status(200)
+        expect(json.count).to eq(1)
       end
     end
   end
