@@ -1,0 +1,34 @@
+version: '3'
+services:
+  db:
+    container_name: postgres
+    image: postgres:11
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+  api:
+    container_name: api
+    build: ./api
+    command: bundle exec rails s -p 3000 -b '0.0.0.0'
+    volumes:
+      - ./api:/myapp/api
+    depends_on:
+      - db
+  web:
+    container_name: web
+    image: "node:14-alpine"
+    user: "node"
+    working_dir: /myapp/web
+    volumes:
+      - ./web:/myapp/web
+    command: "npm start"
+    depends_on:
+      - api
+  yaichi:
+    container_name: yaichi
+    image: mtsmfm/yaichi:1.5.0
+    ports:
+      - 80:3000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
