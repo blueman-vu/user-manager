@@ -30,4 +30,8 @@ class Message
   def self.expired_token
     'Sorry, your token has expired. Please login to continue.'
   end
+
+  def self.block_user
+    'Account have been blocked. Please contact the administrator'
+  end
 end

@@ -5,6 +5,7 @@ RSpec.describe 'Authentication', type: :request do
   describe 'POST /auth/login' do
     # create test user
     let!(:user) { create(:user) }
+    let!(:block_user){ create(:user, is_block:true)}
     # set headers for authorization
     let(:headers) { valid_headers.except('Authorization') }
     # set test valid and invalid credentials
@@ -21,6 +22,13 @@ RSpec.describe 'Authentication', type: :request do
       }.to_json
     end
 
+    let(:block_credentials) do 
+      {
+        email: block_user.email,
+        password: block_user.password
+      }.to_json
+    end
+
     # set request.headers to our custon headers
     # before { allow(request).to receive(:headers).and_return(headers) }
 
@@ -34,6 +42,16 @@ RSpec.describe 'Authentication', type: :request do
     end
 
     # returns failure message when request is invalid
+    context 'When request is invalid' do
+      before { post '/auth/login', params: block_credentials, headers: headers }
+
+      it 'returns a failure message' do
+        expect(json['message']).to match(/Account have been blocked. Please contact the administrator/)
+      end
+    end
+
+
+    # returns failure message when user have been block
     context 'When request is invalid' do
       before { post '/auth/login', params: invalid_credentials, headers: headers }
 
