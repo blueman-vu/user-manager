@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UsersController < ApplicationController
   skip_before_action :authorize_request, only: :create
 
@@ -20,7 +22,7 @@ class UsersController < ApplicationController
       :username,
       :name,
       :email,
-      :password,
+      :password
     )
   end
 end

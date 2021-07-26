@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class User < ApplicationRecord
   has_secure_password
   validates :username, presence: true, length: { minimum: 5, maximum: 50 }
@@ -6,8 +8,8 @@ class User < ApplicationRecord
 
   validates_inclusion_of :role, in: %w[admin user]
 
-  scope :list_user, -> (role) {
-    condition = role == 'admin' ? {} : {is_block: false, role: 'user'} 
+  scope :list_user, lambda { |role|
+    condition = role == 'admin' ? {} : { is_block: false, role: 'user' }
     where(condition).order(created_at: :asc)
   }
 end

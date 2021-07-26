@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'Authentication', type: :request do
@@ -5,7 +7,7 @@ RSpec.describe 'Authentication', type: :request do
   describe 'POST /auth/login' do
     # create test user
     let!(:user) { create(:user) }
-    let!(:block_user){ create(:user, is_block:true)}
+    let!(:block_user) { create(:user, is_block: true) }
     # set headers for authorization
     let(:headers) { valid_headers.except('Authorization') }
     # set test valid and invalid credentials
@@ -22,7 +24,7 @@ RSpec.describe 'Authentication', type: :request do
       }.to_json
     end
 
-    let(:block_credentials) do 
+    let(:block_credentials) do
       {
         email: block_user.email,
         password: block_user.password
@@ -49,7 +51,6 @@ RSpec.describe 'Authentication', type: :request do
         expect(json['message']).to match(/Account have been blocked. Please contact the administrator/)
       end
     end
-
 
     # returns failure message when user have been block
     context 'When request is invalid' do
