@@ -1,9 +1,4 @@
 require 'rails_helper'
-require './spec/support/controller_helper_spec.rb'
-
-RSpec.configure do |c|
-  c.include ControllerSpecHelper
-end
 
 RSpec.describe AuthorizeApiRequest do
   # Create test user
