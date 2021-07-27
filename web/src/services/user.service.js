@@ -1,7 +1,7 @@
 import axios from "axios";
 import authHeader from "./auth-header";
 
-const API_URL = process.env.BACKEND_API_URL || "http://backend.localhost/";
+const API_URL = "http://api.localhost/";
 
 class UserService {
   getUserBoard() {
