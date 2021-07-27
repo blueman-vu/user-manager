@@ -84,8 +84,6 @@ RSpec.describe 'Users API', type: :request do
 
   describe 'get list users' do
     let!(:user) { create(:user) }
-    let!(:list_user) { create_list(:user, 10) }
-    let!(:block_user) { create(:user, is_block: true) }
     let!(:admin_user) { create(:user, role: 'admin') }
     let(:admin_header) do
       {
@@ -100,16 +98,17 @@ RSpec.describe 'Users API', type: :request do
       }
     end
     context 'without page' do
+      let!(:block_user) { create(:user, is_block: true) }
       before { get '/users', headers: admin_header }
       it 'success' do
         expect(response).to have_http_status(200)
-        expect(json.count).to eq(10)
+        expect(json.count).to eq(1)
       end
 
       before { get '/users', headers: user_header }
       it 'success' do
         expect(response).to have_http_status(200)
-        expect(json.count).to eq(10)
+        expect(json.count).to eq(1)
       end
     end
 
@@ -117,13 +116,31 @@ RSpec.describe 'Users API', type: :request do
       before { get '/users', params: { page: 2 }, headers: admin_header }
       it 'success' do
         expect(response).to have_http_status(200)
-        expect(json.count).to eq(1)
+        expect(json.count).to eq(0)
       end
 
       before { get '/users', params: { page: 2 }, headers: user_header }
       it 'success' do
         expect(response).to have_http_status(200)
-        expect(json.count).to eq(1)
+        expect(json.count).to eq(0)
+      end
+    end
+
+    context 'block user if signin user is admin' do
+      let!(:user2) { create(:user) }
+      before { post '/block_user', params: { id: user2.id }.to_json, headers: admin_header }
+      it 'success' do
+        expect(response).to have_http_status(200)
+        expect(json).to eq(true)
+      end
+    end
+
+    context 'block user if signin user is not admin' do
+      let!(:user2) { create(:user) }
+      before { post '/block_user', params: { id: user2.id }.to_json, headers: user_header }
+      it 'success' do
+        expect(response).to have_http_status(200)
+        expect(json).to eq(false)
       end
     end
   end
