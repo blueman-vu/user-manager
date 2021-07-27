@@ -2,7 +2,6 @@
 
 class UsersController < ApplicationController
   skip_before_action :authorize_request, only: :create
-  before_action :find_user, only: %[block_user delete]
 
   def create
     user = User.create!(user_params)

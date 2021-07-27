@@ -162,4 +162,94 @@ RSpec.describe 'Users API', type: :request do
       end
     end
   end
+
+  describe 'delete user' do
+    let!(:user) { create(:user) }
+    let!(:user2) { create(:user) }
+    let!(:admin_user) { create(:user, role: 'admin') }
+    let!(:admin_user2) { create(:user, role: 'admin') }
+    let(:admin_header) do
+      {
+        'Authorization' => token_generator(admin_user.id),
+        'Content-Type' => 'application/json'
+      }
+    end
+    let(:user_header) do
+      {
+        'Authorization' => token_generator(user.id),
+        'Content-Type' => 'application/json'
+      }
+    end
+
+    context 'delete user' do
+      it 'user delete another user' do
+        post '/delete_user', params: { id: user2.id }.to_json, headers: user_header 
+        expect(response).to have_http_status(200)
+        expect(json['message']).to match('Somethings went wrong!')
+      end
+
+      it 'admin delete their self' do
+        post '/delete_user', params: { id: admin_user.id }.to_json, headers: admin_header 
+        expect(response).to have_http_status(200)
+        expect(json['message']).to match('Cannot delete this user')
+      end
+
+      it 'admin delete another admin' do
+        post '/delete_user', params: { id: admin_user2.id }.to_json, headers: admin_header 
+        expect(response).to have_http_status(200)
+        expect(json['message']).to match('Cannot delete this user')
+      end
+
+      it 'admin delete user' do
+        post '/delete_user', params: { id: user.id }.to_json, headers: admin_header 
+        expect(response).to have_http_status(200)
+        expect(json['result']).to match(true)
+      end
+    end
+  end
+
+  describe 'block user' do
+    let!(:user) { create(:user) }
+    let!(:user2) { create(:user) }
+    let!(:admin_user) { create(:user, role: 'admin') }
+    let!(:admin_user2) { create(:user, role: 'admin') }
+    let(:admin_header) do
+      {
+        'Authorization' => token_generator(admin_user.id),
+        'Content-Type' => 'application/json'
+      }
+    end
+    let(:user_header) do
+      {
+        'Authorization' => token_generator(user.id),
+        'Content-Type' => 'application/json'
+      }
+    end
+
+    context 'block user' do
+      it 'user block another user' do
+        post '/block_user', params: { id: user2.id }.to_json, headers: user_header 
+        expect(response).to have_http_status(200)
+        expect(json['message']).to match('Somethings went wrong!')
+      end
+
+      it 'admin block their self' do
+        post '/block_user', params: { id: admin_user.id }.to_json, headers: admin_header 
+        expect(response).to have_http_status(200)
+        expect(json['message']).to match('Cannot block this user')
+      end
+
+      it 'admin block another admin' do
+        post '/block_user', params: { id: admin_user2.id }.to_json, headers: admin_header 
+        expect(response).to have_http_status(200)
+        expect(json['message']).to match('Cannot block this user')
+      end
+
+      it 'admin block user' do
+        post '/block_user', params: { id: user.id }.to_json, headers: admin_header 
+        expect(response).to have_http_status(200)
+        expect(json['result']).to match(true)
+      end
+    end
+  end
 end
