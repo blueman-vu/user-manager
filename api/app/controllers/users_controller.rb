@@ -2,6 +2,7 @@
 
 class UsersController < ApplicationController
   skip_before_action :authorize_request, only: :create
+  before_action :find_user, only: %[block_user delete]
 
   def create
     user = User.create!(user_params)
@@ -11,19 +12,45 @@ class UsersController < ApplicationController
   end
 
   def index
-    list_user = User.list_user(@current_user.role).paginate(page: params[:page], per_page: 10)
-    json_response(ActiveModel::Serializer::CollectionSerializer.new(list_user, role: @current_user.role).as_json)
+    list_user = User.list_user(@current_user.role, params[:search])
+    paginate = list_user.paginate(page: params[:page], per_page: 10)
+    json_response({users: ActiveModel::Serializer::CollectionSerializer.new(paginate, role: @current_user.role).as_json, pages: paginate.total_pages})
+  end
+
+  def delete_user
+    @user = User.find(params[:id])
+    if @user == @current_user || @user.role == 'admin'
+      json_response({message: 'Cannot delete this user'})
+      return
+    end
+    if @current_user.role == 'admin'
+      if @user.delete
+        json_response({result: true})
+      else
+        json_response({message: @users.errors})
+      end
+      return
+    end
+    json_response({message: 'Somethings went wrong!'})
   end
 
   def block_user
-    user = User.find_by(id: params[:id])
-    if @current_user.role == 'admin'
-      user.is_block = true
-    else
-      json_response(false)
+    @user = User.find(params[:id])
+    if @user == @current_user || @user.role == 'admin'
+      json_response({message: 'Cannot block this user'})
       return
     end
-    json_response(user.save)
+
+    if @current_user.role == 'admin'
+      @user.is_block = true
+      if @user.save
+        json_response({result: true})
+      else
+        json_response({message: @users.errors})
+      end
+      return
+    end
+    json_response({message: 'Somethings went wrong!'})
   end
 
   private

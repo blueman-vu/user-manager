@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 class UserSerializer < ActiveModel::Serializer
-  attributes :id, :username, :role
-  attribute :is_block, if: :condition?
+  attributes :id, :username, :email, :role
+  attribute :is_block, if: :admin?
 
-  def condition?
+  def admin?
     @instance_options[:role] == 'admin'
   end
 end

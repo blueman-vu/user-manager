@@ -8,8 +8,10 @@ class User < ApplicationRecord
 
   validates_inclusion_of :role, in: %w[admin user]
 
-  scope :list_user, lambda { |role|
+  scope :list_user, lambda { |role, search|
     condition = role == 'admin' ? {} : { is_block: false, role: 'user' }
-    where(condition).order(created_at: :asc)
+    where(condition)
+    .where('username LIKE ? OR email LIKE ?', "%#{search}%", "%#{search}%")
+    .order(created_at: :asc)
   }
 end

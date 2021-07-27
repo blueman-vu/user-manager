@@ -143,5 +143,23 @@ RSpec.describe 'Users API', type: :request do
         expect(json).to eq(false)
       end
     end
+
+    context 'delete user if signin user is admin' do
+      let!(:user2) { create(:user) }
+      before { post '/delete', params: { id: user2.id }.to_json, headers: admin_header }
+      it 'success' do
+        expect(response).to have_http_status(200)
+        expect(json).to eq(true)
+      end
+    end
+
+    context 'delete user if signin user is not admin' do
+      let!(:user2) { create(:user) }
+      before { post '/delete', params: { id: user2.id }.to_json, headers: user_header }
+      it 'success' do
+        expect(response).to have_http_status(200)
+        expect(json).to eq(false)
+      end
+    end
   end
 end
