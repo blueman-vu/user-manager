@@ -10,16 +10,17 @@ class AuthService {
         password,
       })
       .then((response) => {
-        if (response.data.accessToken) {
-          localStorage.setItem("user", JSON.stringify(response.data));
+        if (response.data.auth_token) {
+          localStorage.setItem(
+            "auth_token",
+            JSON.stringify(response.data.auth_token)
+          );
         }
-
-        return response.data;
       });
   }
 
   logout() {
-    localStorage.removeItem("user");
+    localStorage.removeItem("auth_token");
   }
 
   register(username, email, password) {
@@ -28,10 +29,6 @@ class AuthService {
       email,
       password,
     });
-  }
-
-  getCurrentUser() {
-    return JSON.parse(localStorage.getItem("user"));
   }
 }
 
