@@ -13,14 +13,22 @@
 $ git clone git@github.com:blueman-vu/user-manager.git && cd user-manager
 
 # Setup
-$ docker-compose run backend bin/rails db:create db:migrate db:seed
-$ docker-compose run frontend npm install
+$ docker-compose run api bin/rails db:create db:migrate db:seed
+$ docker-compose run web npm install
 
 Admin: admin@test.com/password
 
 # Start
 $ docker-compose up -d
 
-# Open frontend
+# Open web
 $ open http://localhost:80 # You'll see yaichi page, then click any app
 ```
+## Document
+
+### API Diagram
+![](API.png)
+
+### API Design
+
+`API Design.xlsx`
