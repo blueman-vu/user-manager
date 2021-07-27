@@ -12,7 +12,7 @@ class UsersController < ApplicationController
 
   def index
     list_user = User.list_user(@current_user.role).paginate(page: params[:page], per_page: 10)
-    json_response(ActiveModel::Serializer::CollectionSerializer.new(list_user).as_json)
+    json_response(ActiveModel::Serializer::CollectionSerializer.new(list_user, role: @current_user.role).as_json)
   end
 
   def block_user
