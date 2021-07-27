@@ -102,6 +102,7 @@ export default class Register extends Component {
             message: response.data.message,
             successful: true,
           });
+          this.props.history.push("/login");
         },
         (error) => {
           const resMessage =
@@ -129,7 +130,6 @@ export default class Register extends Component {
             alt="profile-img"
             className="profile-img-card"
           />
-
           <Form
             onSubmit={this.handleRegister}
             ref={(c) => {
