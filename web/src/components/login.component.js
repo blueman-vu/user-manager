@@ -118,7 +118,7 @@ export default class Login extends Component {
               />
             </div>
 
-            <div className="form-group">
+            <div className="form-group button-group">
               <button
                 className="btn btn-primary btn-block"
                 disabled={this.state.loading}
@@ -129,6 +129,7 @@ export default class Login extends Component {
                 <span>Login</span>
               </button>
             </div>
+            <p style={{paddingLeft: '10px'}}>No account? <a href='/register'>Create one</a></p>
 
             {this.state.message && (
               <div className="form-group">
