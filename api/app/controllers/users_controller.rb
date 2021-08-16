@@ -34,6 +34,11 @@ class UsersController < ApplicationController
       json_response({message: @users.errors})
     end
   end
+  
+  def top_5
+    top_5 = User.top_like.limit(5)
+    json_response(top_5)
+  end
 
   private
 

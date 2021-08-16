@@ -15,4 +15,8 @@ class User < ApplicationRecord
     .where('username LIKE ? OR email LIKE ?', "%#{search}%", "%#{search}%")
     .order(created_at: :asc)
   }
+  
+  scope :top_like, lambda {
+    joins(:posts).group('posts.user_id').order('SUM(posts.like_count) DESC')
+  }
 end

@@ -7,4 +7,8 @@ class UserSerializer < ActiveModel::Serializer
   def admin?
     @instance_options[:role] == 'admin'
   end
+
+  def total_like
+    self.posts.sum(:like_count)
+  end
 end
