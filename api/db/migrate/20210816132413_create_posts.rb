@@ -7,7 +7,8 @@ class CreatePosts < ActiveRecord::Migration[6.1]
       t.boolean :is_published, default: false
       t.datetime :published_date
       t.references :user, foreign_key: true
-
+      t.integer :like_count
+      
       t.timestamps
     end
   end

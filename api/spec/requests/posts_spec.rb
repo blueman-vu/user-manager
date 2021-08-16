@@ -4,6 +4,7 @@ RSpec.describe "Posts", type: :request do
   let(:user) { create(:user) }
   let(:user1) { create(:user) }
   let!(:posts) { create_list(:post, 10, user_id: user.id) }
+  let!(:target_post) { create(:post, user_id: user.id, title: 'Phước Vũ')}
   let(:post_id) { posts.first.id }
   # authorize request
   let(:headers) { valid_headers }
@@ -25,17 +26,27 @@ RSpec.describe "Posts", type: :request do
 
   # Test suite for GET /posts
   describe 'GET /posts' do
-    # make HTTP get request before each example
-    before { get '/posts', params: {}, headers: headers }
+    context 'get all posts' do
+      # make HTTP get request before each example
+      before { get '/posts', params: {}, headers: headers }
 
-    it 'returns posts' do
-      # Note `json` is a custom helper to parse JSON responses
-      expect(json).not_to be_empty
-      expect(json.size).to eq(10)
+      it 'returns posts' do
+        # Note `json` is a custom helper to parse JSON responses
+        expect(json).not_to be_empty
+        expect(json.size).to eq(11)
+      end
+
+      it 'returns status code 200' do
+        expect(response).to have_http_status(200)
+      end
     end
 
-    it 'returns status code 200' do
-      expect(response).to have_http_status(200)
+    context 'get posts by search' do
+      before { get "/posts?search=phuoc vu", headers: admin_headers }
+      it 'success' do
+        expect(response).to have_http_status(200)
+        expect(json.count).to eq(1)
+      end
     end
   end
 

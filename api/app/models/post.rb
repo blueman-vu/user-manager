@@ -15,4 +15,11 @@ class Post < ApplicationRecord
       end
     end
   end
+
+  scope :lists, lambda { |role, search|
+    condition = role == 'admin' ? {} : { is_published: false }
+    search = search.downcase if search
+    where(condition).where('unaccent(LOWER(title)) LIKE ?', "%#{search}%")
+    .order(created_at: :asc)
+  }
 end
