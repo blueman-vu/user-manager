@@ -7,5 +7,4 @@ RSpec.describe Post, type: :model do
     should validate_length_of(:title)
       .is_at_most(50)
   }
-  it { should validate_presence_of(:alias_name) }
 end

@@ -36,4 +36,8 @@ class Message
   def self.block_user
     'Account have been blocked. Please contact the administrator'
   end
+
+  def self.no_permission
+    'You do not have permission to do that'
+  end
 end

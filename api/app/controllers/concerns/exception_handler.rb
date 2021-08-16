@@ -12,6 +12,8 @@ module ExceptionHandler
 
   class BlockUser < StandardError; end
 
+  class NoPermission < StandardError; end
+
   included do
     # Define custom handlers
     rescue_from ActiveRecord::RecordInvalid, with: :four_twenty_two
@@ -19,6 +21,7 @@ module ExceptionHandler
     rescue_from ExceptionHandler::MissingToken, with: :four_twenty_two
     rescue_from ExceptionHandler::InvalidToken, with: :four_twenty_two
     rescue_from ExceptionHandler::BlockUser, with: :unauthorized_request
+    rescue_from ExceptionHandler::NoPermission, with: :four_twenty_two
 
     rescue_from ActiveRecord::RecordNotFound do |e|
       json_response({ message: e.message }, :not_found)

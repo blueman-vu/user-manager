@@ -1,7 +1,6 @@
 FactoryBot.define do
   factory :post do
-    title { "MyString" }
-    alias_name { "MyString" }
+    title { Faker::Name.name }
     content { "MyText" }
     is_published { false }
   end

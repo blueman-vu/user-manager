@@ -17,6 +17,7 @@ RSpec.describe User, type: :model do
   }
 
   it { should validate_inclusion_of(:role).in_array(%w[user admin]) }
+  it { should have_many(:posts) }
   
   describe 'list_user' do
     let!(:user1) {create(:user)}

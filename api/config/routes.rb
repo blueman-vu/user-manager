@@ -7,4 +7,5 @@ Rails.application.routes.draw do
   get '/users', to: 'users#index'
   post '/block_user', to: 'users#block_user'
   post '/delete_user', to: 'users#delete_user'
+  resources :posts
 end

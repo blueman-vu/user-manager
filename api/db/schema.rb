@@ -20,6 +20,7 @@ ActiveRecord::Schema.define(version: 2021_08_16_132413) do
     t.string "alias_name"
     t.text "content"
     t.boolean "is_published", default: false
+    t.datetime "published_date"
     t.bigint "user_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

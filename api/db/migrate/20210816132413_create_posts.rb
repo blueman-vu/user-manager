@@ -5,6 +5,7 @@ class CreatePosts < ActiveRecord::Migration[6.1]
       t.string :alias_name
       t.text :content
       t.boolean :is_published, default: false
+      t.datetime :published_date
       t.references :user, foreign_key: true
 
       t.timestamps
