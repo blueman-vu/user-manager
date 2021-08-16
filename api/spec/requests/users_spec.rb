@@ -34,7 +34,7 @@ RSpec.describe 'Users API', type: :request do
       it 'does not create a new user' do
         expect(response).to have_http_status(422)
         expect(json['message'])
-          .to eq("Validation failed: Password can't be blank, Username can't be blank, Username is too short (minimum is 5 characters), Email can't be blank, Password can't be blank, Password is too short (minimum is 7 characters)")
+          .to eq("Validation failed: Password can't be blank, Username can't be blank, Username is too short (minimum is 5 characters), Email can't be blank, Password is too short (minimum is 7 characters)")
       end
     end
 
@@ -54,7 +54,7 @@ RSpec.describe 'Users API', type: :request do
       it 'missing password' do
         post '/signup', params: { email: 'user1@gmail.com', username: 'username1' }
         expect(response).to have_http_status(422)
-        expect(json['message']).to eq("Validation failed: Password can't be blank, Password can't be blank, Password is too short (minimum is 7 characters)")
+        expect(json['message']).to eq("Validation failed: Password can't be blank, Password is too short (minimum is 7 characters)")
       end
     end
 
@@ -102,13 +102,13 @@ RSpec.describe 'Users API', type: :request do
       before { get '/users', headers: admin_header }
       it 'success' do
         expect(response).to have_http_status(200)
-        expect(json.count).to eq(1)
+        expect(json['users'].count).to eq(1)
       end
 
       before { get '/users', headers: user_header }
       it 'success' do
         expect(response).to have_http_status(200)
-        expect(json.count).to eq(1)
+        expect(json['users'].count).to eq(1)
       end
     end
 
@@ -116,13 +116,13 @@ RSpec.describe 'Users API', type: :request do
       before { get '/users', params: { page: 2 }, headers: admin_header }
       it 'success' do
         expect(response).to have_http_status(200)
-        expect(json.count).to eq(0)
+        expect(json['users'].count).to eq(0)
       end
 
       before { get '/users', params: { page: 2 }, headers: user_header }
       it 'success' do
         expect(response).to have_http_status(200)
-        expect(json.count).to eq(0)
+        expect(json['users'].count).to eq(0)
       end
     end
 
@@ -131,7 +131,7 @@ RSpec.describe 'Users API', type: :request do
       before { post '/block_user', params: { id: user2.id }.to_json, headers: admin_header }
       it 'success' do
         expect(response).to have_http_status(200)
-        expect(json).to eq(true)
+        expect(json['result']).to eq(true)
       end
     end
 
@@ -139,26 +139,26 @@ RSpec.describe 'Users API', type: :request do
       let!(:user2) { create(:user) }
       before { post '/block_user', params: { id: user2.id }.to_json, headers: user_header }
       it 'success' do
-        expect(response).to have_http_status(200)
-        expect(json).to eq(false)
+        expect(response).to have_http_status(422)
+        expect(json['message']).to eq('You do not have permission to do that')
       end
     end
 
     context 'delete user if signin user is admin' do
       let!(:user2) { create(:user) }
-      before { post '/delete', params: { id: user2.id }.to_json, headers: admin_header }
+      before { post '/delete_user', params: { id: user2.id }.to_json, headers: admin_header }
       it 'success' do
         expect(response).to have_http_status(200)
-        expect(json).to eq(true)
+        expect(json['result']).to eq(true)
       end
     end
 
     context 'delete user if signin user is not admin' do
       let!(:user2) { create(:user) }
-      before { post '/delete', params: { id: user2.id }.to_json, headers: user_header }
+      before { post '/delete_user', params: { id: user2.id }.to_json, headers: user_header }
       it 'success' do
-        expect(response).to have_http_status(200)
-        expect(json).to eq(false)
+        expect(response).to have_http_status(422)
+        expect(json['message']).to eq('You do not have permission to do that')
       end
     end
   end
@@ -184,20 +184,20 @@ RSpec.describe 'Users API', type: :request do
     context 'delete user' do
       it 'user delete another user' do
         post '/delete_user', params: { id: user2.id }.to_json, headers: user_header 
-        expect(response).to have_http_status(200)
-        expect(json['message']).to match('Somethings went wrong!')
+        expect(response).to have_http_status(422)
+        expect(json['message']).to eq('You do not have permission to do that')
       end
 
       it 'admin delete their self' do
         post '/delete_user', params: { id: admin_user.id }.to_json, headers: admin_header 
-        expect(response).to have_http_status(200)
-        expect(json['message']).to match('Cannot delete this user')
+        expect(response).to have_http_status(422)
+        expect(json['message']).to eq('You do not have permission to do that')
       end
 
       it 'admin delete another admin' do
         post '/delete_user', params: { id: admin_user2.id }.to_json, headers: admin_header 
-        expect(response).to have_http_status(200)
-        expect(json['message']).to match('Cannot delete this user')
+        expect(response).to have_http_status(422)
+        expect(json['message']).to eq('You do not have permission to do that')
       end
 
       it 'admin delete user' do
@@ -229,20 +229,20 @@ RSpec.describe 'Users API', type: :request do
     context 'block user' do
       it 'user block another user' do
         post '/block_user', params: { id: user2.id }.to_json, headers: user_header 
-        expect(response).to have_http_status(200)
-        expect(json['message']).to match('Somethings went wrong!')
+        expect(response).to have_http_status(422)
+        expect(json['message']).to eq('You do not have permission to do that')
       end
 
       it 'admin block their self' do
         post '/block_user', params: { id: admin_user.id }.to_json, headers: admin_header 
-        expect(response).to have_http_status(200)
-        expect(json['message']).to match('Cannot block this user')
+        expect(response).to have_http_status(422)
+        expect(json['message']).to eq('You do not have permission to do that')
       end
 
       it 'admin block another admin' do
         post '/block_user', params: { id: admin_user2.id }.to_json, headers: admin_header 
-        expect(response).to have_http_status(200)
-        expect(json['message']).to match('Cannot block this user')
+        expect(response).to have_http_status(422)
+        expect(json['message']).to eq('You do not have permission to do that')
       end
 
       it 'admin block user' do
