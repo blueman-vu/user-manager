@@ -44,7 +44,6 @@ export default class Users extends Component {
     })
 
     UserService.getTop5User().then((res) => {
-      console.log(res)
       if (res) {
         this.setState({
           top5user: res.data

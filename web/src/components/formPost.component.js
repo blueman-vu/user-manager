@@ -112,7 +112,6 @@ export default class FormPost extends Component {
         like_count: likeCount
       }
       PostService.createPost(params, mode, aliasName).then((res) => {
-        console.log(res)
         if (res.data.result){
           this.setState({
             message: res.data.message,
