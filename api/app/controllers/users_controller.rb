@@ -36,7 +36,7 @@ class UsersController < ApplicationController
   end
   
   def top_5
-    top_5 = User.top_like.limit(5)
+    top_5 = User.top_like.take(5)
     json_response(top_5)
   end
 

@@ -10,6 +10,12 @@ class PostService {
     });
   }
 
+  getTopPost() {
+    return axios.get(API_URL + 'top_post', {
+      headers: authHeader()
+    });
+  }
+
   getDetailPost(query) {
     return axios.get(API_URL + `posts/${query}`, {
       headers: authHeader(),

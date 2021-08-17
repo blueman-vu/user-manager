@@ -4,6 +4,9 @@ import authHeader from "./auth-header";
 const API_URL = "http://api.localhost/";
 
 class UserService {
+  getTop5User(){
+    return axios.get(API_URL + "top_5", { headers: authHeader() });
+  }
   getCurrentUser() {
     return axios.get(API_URL + "get_user", { headers: authHeader() });
   }

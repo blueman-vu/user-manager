@@ -4,7 +4,7 @@ class PostsController < ApplicationController
 
   # GET /posts
   def index
-    @posts = Post.lists(current_user.role, params[:search])
+    @posts = Post.lists(current_user, params[:search])
     paginate = @posts.paginate(page: params[:page], per_page: 10)
     json_response({posts: ActiveModel::Serializer::CollectionSerializer.new(paginate).as_json, pages: paginate.total_pages})
   end
@@ -12,7 +12,7 @@ class PostsController < ApplicationController
   # POST /posts
   def create
     post = current_user.posts.create(post_params)
-    if post  
+    if post.save
       json_response({result: true})
     else
       json_response({message: post.errors})
@@ -26,8 +26,11 @@ class PostsController < ApplicationController
 
   # PUT /posts/:alias_name
   def update
-    @post.update(post_params)
-    head :no_content
+    if @post.update(post_params)
+      json_response({result: true})
+    else
+      json_response({message: @post.errors})
+    end
   end
 
   # DELETE /posts/:alias_name
@@ -39,6 +42,10 @@ class PostsController < ApplicationController
   def like
     @post.update(like_count: @post.like_count.to_i + 1)
     json_response(@post.like_count)
+  end
+
+  def top_post
+    json_response(Post.top)
   end
 
   private

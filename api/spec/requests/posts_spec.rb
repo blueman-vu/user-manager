@@ -88,25 +88,20 @@ RSpec.describe "Posts", type: :request do
       before { post '/posts', params: valid_attributes.to_json, headers: headers }
 
       it 'creates a todo' do
-        expect(json['title']).to eq('Đây là title')
-        expect(json['alias_name']).to eq('day-la-title')
-      end
-
-      it 'returns status code 201' do
-        expect(response).to have_http_status(201)
+        expect(json['result']).to eq(true)
       end
     end
 
     context 'when the request is invalid' do
       before { post '/posts', params: { content: 'Foobar' }.to_json, headers: headers }
 
-      it 'returns status code 422' do
-        expect(response).to have_http_status(422)
+      it 'returns status code 200' do
+        expect(response).to have_http_status(200)
       end
 
       it 'returns a validation failure message' do
         expect(json['message'])
-        .to eq("Validation failed: Title can't be blank")
+        .to eq({"title"=>["can't be blank"]})
       end
     end
 
@@ -134,11 +129,11 @@ RSpec.describe "Posts", type: :request do
         before { put "/posts/#{alias_name}", params: valid_attributes.to_json, headers: headers }
 
         it 'updates the record' do
-          expect(response.body).to be_empty
+          expect(json['result']).to eq(true)
         end
 
-        it 'returns status code 204' do
-          expect(response).to have_http_status(204)
+        it 'returns status code 200' do
+          expect(response).to have_http_status(200)
         end
       end
     end
@@ -150,11 +145,11 @@ RSpec.describe "Posts", type: :request do
         before { put "/posts/#{alias_name}", params: valid_attributes.to_json, headers: admin_headers }
 
         it 'updates the record' do
-          expect(response.body).to be_empty
+          expect(json['result']).to eq(true)
         end
 
         it 'returns status code 204' do
-          expect(response).to have_http_status(204)
+          expect(response).to have_http_status(200)
         end
       end
     end

@@ -73,8 +73,7 @@ export default class FormPost extends Component {
 
     if (mode !== 'create') {
       PostService.getDetailPost(alias_name).then((res) => {
-        if (res.statusText == 'OK') {
-          console.log(res.data)
+        if (res.statusText === 'OK') {
           this.setState({
             title: res.data.title,
             content: res.data.content,
@@ -113,27 +112,20 @@ export default class FormPost extends Component {
         like_count: likeCount
       }
       PostService.createPost(params, mode, aliasName).then((res) => {
-        this.setState({
-          message: res.data.message,
-          successful: true,
-        })
-        this.props.history.push(`/posts`);
-      },
-        (error) => {
-          const resMessage =
-            (error.res &&
-              error.res.data &&
-              error.res.data.message) ||
-            error.message ||
-            error.toString();
-
+        console.log(res)
+        if (res.data.result){
+          this.setState({
+            message: res.data.message,
+            successful: true,
+          })
+          this.props.history.push(`/posts`);
+        } else {
           this.setState({
             successful: false,
-            message: resMessage,
+            message: "Title has already been taken",
           });
         }
-      )
-
+      })
     }
   }
 
@@ -161,15 +153,17 @@ export default class FormPost extends Component {
         {!this.state.successful && (
           <div className="col-12 col-lg-6 offset-lg-3">
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex' }}>
-                <Input
-                  type="checkbox"
-                  onChange={(ev) => this.handleToggle(ev)}
-                  name='isPublished'
-                  checked={isPublished}
-                  disabled={isDetail}
-                /> Publised?
-              </div>
+              {!isDetail &&
+                <div style={{ display: 'flex' }}>
+                  <Input
+                    type="checkbox"
+                    onChange={(ev) => this.handleToggle(ev)}
+                    name='isPublished'
+                    checked={isPublished}
+                    disabled={isDetail}
+                  /> Publised?
+                </div>
+              }
               {isDetail &&
                 <div>
 
@@ -199,7 +193,7 @@ export default class FormPost extends Component {
             <div className='button-group'>
               <button className="btn"> <a href='/posts'>Back</a></button>
               {!isDetail &&
-                <button onClick={this.handleSubmit} className="btn btn-primary">{mode == 'edit' ? 'Update' : 'Submit'}</button>
+                <button onClick={this.handleSubmit} className="btn btn-primary">{mode === 'edit' ? 'Update' : 'Submit'}</button>
               }
             </div>
             {this.state.message && (

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class UserSerializer < ActiveModel::Serializer
-  attributes :id, :username, :email, :role
+  attributes :id, :username, :email, :role, :total_like
   attribute :is_block, if: :admin?
 
   def admin?

@@ -2,12 +2,15 @@ import React, { Component } from "react";
 import UserService from "../services/user.service";
 import PostService from "../services/post.service";
 import ReactPaginate from "react-paginate";
-
+import Moment from 'react-moment';
 export default class Users extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      totalLike: 0,
+      topBlog: {},
+      top5user: [],
       listPost: [],
       pages: null,
       userRole: "",
@@ -26,10 +29,28 @@ export default class Users extends Component {
       if (res) {
         this.setState({
           userRole: res.data.role,
-          userEmail: res.data.email
+          userEmail: res.data.email,
+          totalLike: res.data.total_like
         });
       }
     });
+
+    PostService.getTopPost().then((res) => {
+      if (res) {
+        this.setState({
+          topBlog: res.data
+        })
+      }
+    })
+
+    UserService.getTop5User().then((res) => {
+      console.log(res)
+      if (res) {
+        this.setState({
+          top5user: res.data
+        })
+      }
+    })
   }
 
   handlePageClick = (event) => {
@@ -56,13 +77,7 @@ export default class Users extends Component {
 
   handleDelete = (alias_name) => {
     PostService.deletePost(alias_name).then((res) => {
-      if (res) {
-        if (res?.data?.result) {
-          this.props.history.push('/posts');
-        } else {
-          alert(res.data?.message);
-        }
-      }
+      window.location.reload();
     });
   };
 
@@ -77,7 +92,7 @@ export default class Users extends Component {
   };
 
   render() {
-    let { listPost, pages, userRole, userEmail } = this.state;
+    let { listPost, pages, userRole, userEmail, totalLike, topBlog, top5user } = this.state;
 
     let posts = listPost.map((item) => {
       const { id, title, email, published_date, alias_name } = item;
@@ -86,7 +101,7 @@ export default class Users extends Component {
           <td>{id}</td>
           <td>{title}</td>
           <td>{email}</td>
-          <td>{published_date}</td>
+          <td><Moment>{published_date}</Moment></td>
           <td>
             <button onClick={() => this.handleView(alias_name)}>
               View
@@ -111,6 +126,23 @@ export default class Users extends Component {
     });
     return (
       <div>
+        <div className="summary">
+          <div className="top-collect">
+            <span>Total like: {totalLike}♥ </span>
+            <span>Top blog: <a href={`post/detail/${topBlog?.alias_name}`}>{topBlog.title}</a> </span>
+          </div>
+
+          <div className="top_user">
+            <h3>Top 5 user mosts like</h3>
+              {top5user.map((item) => {
+                return (
+                  <span key={item.id}>{item.email} - {item.total_like} likes</span>
+                )
+              })}
+
+          </div>
+        </div>
+        <hr />
         <div className="header button-group">
           <input
             className="query"

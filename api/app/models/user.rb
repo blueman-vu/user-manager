@@ -17,6 +17,7 @@ class User < ApplicationRecord
   }
   
   scope :top_like, lambda {
-    joins(:posts).group('posts.user_id').order('SUM(posts.like_count) DESC')
+    where(role: 'user', is_block: false)
+    .sort_by {|user| user.posts.sum(:like_count)}.reverse
   }
 end
