@@ -9,6 +9,6 @@ class UserSerializer < ActiveModel::Serializer
   end
 
   def total_like
-    self.posts.sum(:like_count)
+    object.posts.sum(:like_count)
   end
 end

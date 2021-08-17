@@ -40,4 +40,8 @@ class Message
   def self.no_permission
     'You do not have permission to do that'
   end
+
+  def self.no_record
+    'Record not found'
+  end
 end

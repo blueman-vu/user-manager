@@ -5,7 +5,8 @@ class PostsController < ApplicationController
   # GET /posts
   def index
     @posts = Post.lists(current_user.role, params[:search])
-    json_response(@posts)
+    paginate = @posts.paginate(page: params[:page], per_page: 10)
+    json_response({posts: ActiveModel::Serializer::CollectionSerializer.new(paginate).as_json, pages: paginate.total_pages})
   end
 
   # POST /posts
@@ -14,18 +15,18 @@ class PostsController < ApplicationController
     json_response(@post, :created)
   end
 
-  # GET /posts/:id
+  # GET /posts/:alias_name
   def show
     json_response(@post)
   end
 
-  # PUT /posts/:id
+  # PUT /posts/:alias_name
   def update
     @post.update(post_params)
     head :no_content
   end
 
-  # DELETE /posts/:id
+  # DELETE /posts/:alias_name
   def destroy
     @post.destroy
     head :no_content
@@ -47,6 +48,7 @@ class PostsController < ApplicationController
   end
 
   def find_post
-    @post = Post.find(params[:id])
+    @post = Post.find_by(alias_name: params[:alias_name])
+    raise(ExceptionHandler::NoRecord, Message.no_record) unless @post
   end
 end

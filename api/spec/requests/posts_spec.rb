@@ -5,7 +5,7 @@ RSpec.describe "Posts", type: :request do
   let(:user1) { create(:user) }
   let!(:posts) { create_list(:post, 10, user_id: user.id) }
   let!(:target_post) { create(:post, user_id: user.id, title: 'Phước Vũ')}
-  let(:post_id) { posts.first.id }
+  let(:alias_name) { posts.first.alias_name }
   # authorize request
   let(:headers) { valid_headers }
   let(:invalid_headers) { { 'Authorization' => nil } }
@@ -28,12 +28,12 @@ RSpec.describe "Posts", type: :request do
   describe 'GET /posts' do
     context 'get all posts' do
       # make HTTP get request before each example
-      before { get '/posts', params: {}, headers: headers }
+      before { get '/posts', params: { page: 1 }, headers: headers }
 
       it 'returns posts' do
         # Note `json` is a custom helper to parse JSON responses
         expect(json).not_to be_empty
-        expect(json.size).to eq(11)
+        expect(json['posts'].size).to eq(10)
       end
 
       it 'returns status code 200' do
@@ -42,22 +42,22 @@ RSpec.describe "Posts", type: :request do
     end
 
     context 'get posts by search' do
-      before { get "/posts?search=phuoc vu", headers: admin_headers }
+      before { get "/posts?search=phuoc vu", params: { page: 1 }, headers: admin_headers }
       it 'success' do
         expect(response).to have_http_status(200)
-        expect(json.count).to eq(1)
+        expect(json['posts'].size).to eq(1)
       end
     end
   end
 
-  # Test suite for GET /posts/:id
-  describe 'GET /posts/:id' do
-    before { get "/posts/#{post_id}", params: {}, headers: headers }
+  # Test suite for GET /posts/:alias_name
+  describe 'GET /posts/:alias_name' do
+    before { get "/posts/#{alias_name}", params: {}, headers: headers }
 
     context 'when the record exists' do
       it 'returns the todo' do
         expect(json).not_to be_empty
-        expect(json['id']).to eq(post_id)
+        expect(json['alias_name']).to eq(alias_name)
       end
 
       it 'returns status code 200' do
@@ -66,15 +66,15 @@ RSpec.describe "Posts", type: :request do
     end
 
     context 'when the record does not exist' do
-      let(:post_id) { 100 }
+      let(:alias_name) { 'test_alias' }
 
       it 'returns status code 404' do
-        expect(response).to have_http_status(404)
+        expect(response).to have_http_status(422)
       end
 
       it 'returns a not found message' do
         expect(json['message'])
-        .to eq("Couldn't find Post with 'id'=100")
+        .to eq("Record not found")
       end
     end
   end
@@ -124,14 +124,14 @@ RSpec.describe "Posts", type: :request do
     end
   end
 
-  # Test suite for PUT /posts/:id
-  describe 'PUT /posts/:id' do
+  # Test suite for PUT /posts/:alias_name
+  describe 'PUT /posts/:alias_name' do
 
     describe 'user is creater' do 
       let(:valid_attributes) { { is_published: true } }
 
       context 'when the record exists' do
-        before { put "/posts/#{post_id}", params: valid_attributes.to_json, headers: headers }
+        before { put "/posts/#{alias_name}", params: valid_attributes.to_json, headers: headers }
 
         it 'updates the record' do
           expect(response.body).to be_empty
@@ -147,7 +147,7 @@ RSpec.describe "Posts", type: :request do
       let(:valid_attributes) { { is_published: true } }
 
       context 'when the record exists' do
-        before { put "/posts/#{post_id}", params: valid_attributes.to_json, headers: admin_headers }
+        before { put "/posts/#{alias_name}", params: valid_attributes.to_json, headers: admin_headers }
 
         it 'updates the record' do
           expect(response.body).to be_empty
@@ -163,7 +163,7 @@ RSpec.describe "Posts", type: :request do
       let(:valid_attributes) { { is_published: true } }
 
       context 'when the record exists' do
-        before { put "/posts/#{post_id}", params: valid_attributes.to_json, headers: user_1_headers }
+        before { put "/posts/#{alias_name}", params: valid_attributes.to_json, headers: user_1_headers }
 
         it 'updates the record' do
           expect(json['message'])
@@ -178,10 +178,10 @@ RSpec.describe "Posts", type: :request do
 
   end
 
-  # Test suite for DELETE /posts/:id
-  describe 'DELETE /posts/:id' do
+  # Test suite for DELETE /posts/:alias_name
+  describe 'DELETE /posts/:alias_name' do
     describe 'user is creater' do 
-      before { delete "/posts/#{post_id}",  headers: headers }
+      before { delete "/posts/#{alias_name}",  headers: headers }
 
       it 'returns status code 204' do
         expect(response).to have_http_status(204)
@@ -189,7 +189,7 @@ RSpec.describe "Posts", type: :request do
     end
 
     describe 'user is admin' do 
-      before { delete "/posts/#{post_id}",  headers: admin_headers }
+      before { delete "/posts/#{alias_name}",  headers: admin_headers }
 
       it 'returns status code 204' do
         expect(response).to have_http_status(204)
@@ -197,7 +197,7 @@ RSpec.describe "Posts", type: :request do
     end
 
     describe 'user is another user' do 
-      before { delete "/posts/#{post_id}",  headers: user_1_headers }
+      before { delete "/posts/#{alias_name}",  headers: user_1_headers }
 
       it 'returns status code 204' do
         expect(response).to have_http_status(422)

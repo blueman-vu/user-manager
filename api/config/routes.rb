@@ -8,5 +8,5 @@ Rails.application.routes.draw do
   get '/top_5', to: 'users#top_5'
   post '/block_user', to: 'users#block_user'
   post '/delete_user', to: 'users#delete_user'
-  resources :posts
+  resources :posts, param: :alias_name
 end
