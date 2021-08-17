@@ -177,7 +177,7 @@ export default class Register extends Component {
                 <div className="form-group">
                   <button className="btn btn-primary btn-block">Sign Up</button>
                 </div>
-                <p style={{paddingLeft: '10px'}}>Already have an account? <a href='/login'>Sign In </a></p>
+                <p style={{ paddingLeft: '10px' }}>Already have an account? <a href='/login'>Sign In </a></p>
               </div>
             )}
 

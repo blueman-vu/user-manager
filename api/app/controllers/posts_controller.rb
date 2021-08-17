@@ -1,5 +1,5 @@
 class PostsController < ApplicationController
-  before_action :find_post, only: %i[show update destroy]
+  before_action :find_post, only: %i[show update destroy like]
   before_action :check_permission, only: %i[update destroy]
 
   # GET /posts
@@ -11,8 +11,12 @@ class PostsController < ApplicationController
 
   # POST /posts
   def create
-    @post = current_user.posts.create!(post_params)
-    json_response(@post, :created)
+    post = current_user.posts.create(post_params)
+    if post  
+      json_response({result: true})
+    else
+      json_response({message: post.errors})
+    end
   end
 
   # GET /posts/:alias_name
@@ -32,10 +36,15 @@ class PostsController < ApplicationController
     head :no_content
   end
 
+  def like
+    @post.update(like_count: @post.like_count.to_i + 1)
+    json_response(@post.like_count)
+  end
+
   private
 
   def correct_user
-    current_user.role == 'admin' || current_user.id == @post.user_id
+    current_user.role == 'admin' || (@post.present? && current_user.id == @post.user_id)
   end
 
   def check_permission
@@ -44,11 +53,11 @@ class PostsController < ApplicationController
 
   def post_params
     # whitelist params
-    params.permit(:title, :content, :is_published)
+    params.require(:post).permit(:title, :content, :is_published, :like_count)
   end
 
   def find_post
     @post = Post.find_by(alias_name: params[:alias_name])
-    raise(ExceptionHandler::NoRecord, Message.no_record) unless @post
+    raise(ExceptionHandler::NoRecord, Message.no_record) if @post.blank?
   end
 end

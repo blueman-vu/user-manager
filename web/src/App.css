@@ -76,8 +76,26 @@ label {
   -webkit-border-radius: 50%;
   border-radius: 50%;
 }
-
+.button-like {
+  display: inline-block;
+  height: 38px;
+  padding: 0 30px;
+  color: #555;
+  text-align: center;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 38px;
+  letter-spacing: 0.1rem;
+  text-transform: uppercase;
+  text-decoration: none;
+  white-space: nowrap;
+  background-color: transparent;
+  border-radius: 6px;
+  border: 1px solid #bbb;
+  box-sizing: border-box;
+}
 .Table {
+  width: 100%;
  border-spacing: 20px;
  border: 1px solid #6c7ac9;
  border-radius: 5px;

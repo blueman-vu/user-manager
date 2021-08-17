@@ -9,4 +9,5 @@ Rails.application.routes.draw do
   post '/block_user', to: 'users#block_user'
   post '/delete_user', to: 'users#delete_user'
   resources :posts, param: :alias_name
+  put 'posts/:alias_name/like', to: 'posts#like'
 end

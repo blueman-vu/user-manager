@@ -10,6 +10,8 @@ import Login from "./components/login.component";
 import Register from "./components/register.component";
 import Home from "./components/home.component";
 import Users from "./components/users.component";
+import Posts from "./components/posts.component";
+import FormPost from "./components/formPost.component";
 
 class App extends Component {
   constructor(props) {
@@ -55,6 +57,11 @@ class App extends Component {
                 </Link>
               </li>
               <li className="nav-item">
+                <Link to={"/posts"} className="nav-link">
+                  Posts
+                </Link>
+              </li>
+              <li className="nav-item">
                 <a href="/login" className="nav-link" onClick={this.logOut}>
                   LogOut
                 </a>
@@ -68,7 +75,11 @@ class App extends Component {
             <Route exact path={["/", "/home"]} component={Home} />
             <Route exact path="/login" component={Login} />
             <Route exact path="/users" component={Users} />
+            <Route exact path="/posts" component={Posts} />
             <Route exact path="/register" component={Register} />
+            <Route path="/post/create" component={FormPost} />
+            <Route path="/post/detail/:alias_name" component={FormPost} exact={true} />
+            <Route path="/post/edit/:alias_name" component={FormPost} exact={true} />
           </Switch>
         </div>
       </div>
